@@ -1,12 +1,6 @@
-import functools
-import os
 import nose.tools as nt
-from nose import SkipTest
 
 from ovirtsdk.xml import params
-import ovirtsdk.api
-from ovirtsdk.infrastructure.brokers import VMs
-from lago import utils
 from ovirtlago import testlib
 
 
