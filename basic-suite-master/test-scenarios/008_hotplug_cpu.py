@@ -1,5 +1,5 @@
 import nose.tools as nt
-import paramiko
+import os
 
 from ovirtsdk.xml import params
 from ovirtlago import testlib
@@ -22,17 +22,18 @@ def hotplug_cpu(api):
     )
     nt.assert_true(api.vms.get(VM0_NAME).cpu.topology.sockets == 2)
     
-    host = '192.168.201.213'
-    user = 'cirros'
-    secret = 'cubswin:)'
-    port = 22
-    
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=host, username=user, password=secret, port=port)
-    stdin, stdout, stderr = client.exec_command('lscpu | grep CPU\'(\'s\')\':')
-    cpu_number = stdout.read().splitlines()[0].split(":")[1].strip()
+    open('known_hosts', 'w').close()
+    client = ssh.get_ssh_client(
+        ip_addr='192.168.201.213',
+        ssh_key='known_hosts', 
+        username='cirros',
+        password='cubswin:)'
+    )
+    command = 'lscpu | grep CPU\'(\'s\')\':'
+    stdin, out, err = client.exec_command(command)
+    cpu_number = out.read().splitlines()[0].split(":")[1].strip()
     client.close()
+    os.remove('known_hosts')
     nt.assert_true(int(cpu_number) == 2)
 
 
